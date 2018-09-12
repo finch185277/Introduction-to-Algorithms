@@ -1,0 +1,28 @@
+#!/bin/bash
+gmp="gmp-6.1.2"
+options="-lm -O3 -Wuninitialized -Wunused -Wshadow -Wall -Wextra -pedantic -pipe"
+
+if [ $(uname) == "Linux" ] ; then
+	options+=" -static"
+fi
+
+if [ $# -lt 1 ] ; then
+	echo "Usage: ./compile source [output]" 1>&2
+	exit 1
+elif [ ! -r $1 ] ; then
+	echo "File not found: $1" 1>&2
+	exit 1
+elif [[ $1 =~ .*\.cpp$ ]] ; then
+	code=$(cat $1)
+	len=${#code}
+	if [ "$len" -gt "999" ]; then  
+		echo "code length exceeded 1000" 1>&2
+		exit 1
+	fi
+	objs=$(find ./$gmp/ -name '*.o')
+	g++ $1 $objs $options -I$(pwd)/$gmp/ -o ${2:-submission.out} -std=c++14
+	exit $?
+else
+	echo "Unsupported file type" 1>&2
+	exit 1
+fi
