@@ -13,7 +13,7 @@ int main() {
     for (int j = 0; j < n; j++)
       std::cin >> origin[i][j];
 
-  for (int i = 1; i < n; i++) {
+  for (int i = 1; i < n; i++) { // init bound max cost
     cost[i][0] = std::max(abs(origin[i][0] - origin[i - 1][0]), cost[i - 1][0]);
   }
   for (int j = 1; j < n; j++) {
@@ -22,11 +22,11 @@ int main() {
   for (int i = 1; i < n; i++) {
     for (int j = 1; j < n; j++) {
       int cost_from_top, cost_from_left;
-      cost_from_top =
+      cost_from_top = // count the max cost
           std::max(abs(origin[i][j] - origin[i - 1][j]), cost[i - 1][j]);
       cost_from_left =
           std::max(abs(origin[i][j] - origin[i][j - 1]), cost[i][j - 1]);
-      cost[i][j] = std::min(cost_from_top, cost_from_left);
+      cost[i][j] = std::min(cost_from_top, cost_from_left); // choose path
     }
   }
   std::cout << cost[n - 1][n - 1] << '\n';
