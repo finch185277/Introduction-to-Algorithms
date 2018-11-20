@@ -6,29 +6,33 @@
 long long int dp[MAX][MAX][2];
 long long int ans[MAX];
 
-long long int sol_dp(int _h, int _i, int state) {
-  if (_h < 0 || _i < 0)
+// _h = tree height
+// _n = how many black from top traverse to buttom
+// state = root color
+// btw ... Thanks to Tracy XD
+long long int sol_dp(int _h, int _n, int state) {
+  if (_h <= 0 || _n <= 0)
     return 0;
-  if (dp[_h][_i][state] != -1) {
-    return dp[_h][_i][state];
-  }
-  if (_h < _i)
-    return dp[_h][_i][state] = 0;
-  if (_i == 1 && _h >= 2)
-    return dp[_h][_i][state] = 1;
-  if (state == 0 && _i == _h)
-    return dp[_h][_i][state] = 1;
-  if (state == 1 && _i == _h - 1)
-    return dp[_h][_i][state] = 1;
+  if (dp[_h][_n][state] != -1)
+    return dp[_h][_n][state];
+  if (_h < _n)
+    return dp[_h][_n][state] = 0;
 
-  if (state == 0) { // black
-    dp[_h][_i][state] =
-        (sol_dp(_h - 1, _i - 1, 0) + sol_dp(_h - 1, _i - 1, 1)) % MOD *
-        (sol_dp(_h - 1, _i - 1, 0) + sol_dp(_h - 1, _i - 1, 1) % MOD) % MOD;
-  } else {
-    dp[_h][_i][state] = sol_dp(_h - 1, _i, 0) * sol_dp(_h - 1, _i, 0) % MOD;
+  if (_n == 1 && _h >= 2) // for recursive
+    return dp[_h][_n][state] = 1;
+  if (state == 0 && _n == _h) // all black
+    return dp[_h][_n][state] = 1;
+  if (state == 1 && _n == _h - 1) // all black exclude root is red
+    return dp[_h][_n][state] = 1;
+
+  if (state == 0) { // root is black
+    dp[_h][_n][state] =
+        (sol_dp(_h - 1, _n - 1, 0) + sol_dp(_h - 1, _n - 1, 1)) % MOD *
+        (sol_dp(_h - 1, _n - 1, 0) + sol_dp(_h - 1, _n - 1, 1) % MOD) % MOD;
+  } else { // root is red
+    dp[_h][_n][state] = sol_dp(_h - 1, _n, 0) * sol_dp(_h - 1, _n, 0) % MOD;
   }
-  return dp[_h][_i][state];
+  return dp[_h][_n][state];
 }
 
 long long int find_ans(int _h) {
@@ -46,10 +50,9 @@ int main() {
   int case_count;
   std::cin >> case_count;
   while (case_count--) {
-    int tree_hight;
-    std::cin >> tree_hight;
-    std::cout << (MOD + find_ans(tree_hight) - find_ans(tree_hight - 1)) % MOD
-              << '\n';
+    int th;
+    std::cin >> th;
+    std::cout << (MOD + find_ans(th) - find_ans(th - 1)) % MOD << '\n';
   }
   return 0;
 }
