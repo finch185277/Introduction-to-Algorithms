@@ -7,16 +7,15 @@
 #include <vector>
 #define MAX 100005
 
-std::pair<long long, long long> get_edge() {
-  long long _a, _b;
+std::pair<int, int> get_edge() {
+  int _a, _b;
   std::cin >> _a >> _b;
-  std::pair<long long, long long> _tmp(_a - 1, _b - 1); // 0-base
+  std::pair<int, int> _tmp(_a - 1, _b - 1); // 0-base
   return _tmp;
 }
 
 std::vector<std::vector<bool>>
-make_connect_graph(long long _node_num,
-                   std::vector<std::pair<long long, long long>> &_edges) {
+make_connect_graph(int _node_num, std::vector<std::pair<int, int>> &_edges) {
   std::vector<std::vector<bool>> _graph_table(
       _node_num, std::vector<bool>(_node_num, false));
   for (auto _itr = _edges.begin(); _itr != _edges.end(); _itr++) {
@@ -28,41 +27,53 @@ make_connect_graph(long long _node_num,
   return _graph_table;
 }
 
-bool depth_first_search(long long _node_num, std::string &_node_str,
+bool depth_first_search(int _node_num, std::string &_node_str,
                         std::string &_target_str,
                         std::vector<std::vector<bool>> &_graph) {
-  std::vector<int> _check_stack;
+  // initial
+  std::vector<int> _check_stack, _visited_set;
   for (int i = 0; i < _node_num; i++)
     _check_stack.push_back(i);
-
+  // solve
   for (int i = 0; i < _target_str.size(); i++) {
-    std::vector<int> _cache_stack;
-    while (!_check_stack.empty()) {
-      for (int j = 0; j < _node_num; j++) {
-        if (_target_str[i] == _node_str[j] && _graph[_check_stack.back()][j]) {
-          _cache_stack.push_back(j);
-        }
+    bool _visited_flag = false;
+    for (auto _itr = _visited_set.begin(); _itr != _visited_set.end(); _itr++) {
+      if (_target_str[i] == _node_str[*_itr]) {
+        _visited_flag = true;
+        break;
       }
-      _check_stack.pop_back();
     }
-    std::sort(_cache_stack.begin(), _cache_stack.end());
-    _cache_stack.erase(std::unique(_cache_stack.begin(), _cache_stack.end()),
-                       _cache_stack.end());
-    _check_stack = _cache_stack;
-    if (_check_stack.empty())
-      return false;
+    if (!_visited_flag) {
+      std::vector<int> _cache_stack;
+      while (!_check_stack.empty()) {
+        for (int j = 0; j < _node_num; j++) {
+          if (_target_str[i] == _node_str[j] &&
+              _graph[_check_stack.back()][j]) {
+            _cache_stack.push_back(j);
+            _visited_set.push_back(j);
+          }
+        }
+        _check_stack.pop_back();
+      }
+      std::sort(_cache_stack.begin(), _cache_stack.end());
+      _cache_stack.erase(std::unique(_cache_stack.begin(), _cache_stack.end()),
+                         _cache_stack.end());
+      _check_stack = _cache_stack;
+      if (_check_stack.empty())
+        return false;
+    }
   }
   return true;
 }
 
 int main() {
   // initial
-  long long node_num, edge_num;
+  int node_num, edge_num;
   bool exist_flag = false;
   std::string node_str, target_str;
-  std::vector<std::pair<long long, long long>> edges;
+  std::vector<std::pair<int, int>> edges;
   std::cin >> node_num >> edge_num >> node_str;
-  long long _edge_num(edge_num);
+  int _edge_num(edge_num);
   while (_edge_num--) {
     edges.push_back(get_edge());
   }
