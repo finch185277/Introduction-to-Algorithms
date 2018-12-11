@@ -2,6 +2,7 @@
 #include <array>
 #include <cstring>
 #include <iostream>
+#include <set>
 #include <stack>
 #include <utility>
 #include <vector>
@@ -102,15 +103,18 @@ void print_vector(const std::vector<char> &_v) {
   std::cout << std::endl;
 }
 
+std::vector<char> string_to_uniq_vec(const std::string &_s) {
+  std::vector<char> _tmp;
+  std::copy(_s.begin(), _s.end(), std::back_inserter(_tmp));
+  std::set<int> s(_tmp.begin(), _tmp.end()); // erase duplicates
+  _tmp.assign(s.begin(), s.end());
+  return _tmp;
+}
+
 bool check_exist_path(
     const std::string &_node_str, const std::string &_target_str,
     const std::vector<connected_component> &_connected_component_group) {
-  std::vector<char> _target_vec;
-  std::copy(_target_str.begin(), _target_str.end(),
-            std::back_inserter(_target_vec));
-  std::sort(_target_vec.begin(), _target_vec.end());
-  _target_vec.erase(std::unique(_target_vec.begin(), _target_vec.end()),
-                    _target_vec.end());
+  std::vector<char> _target_vec(string_to_uniq_vec(_target_str));
   // print_vector(_target_vec);
   for (connected_component _c : _connected_component_group) {
     int _success_count(0);
