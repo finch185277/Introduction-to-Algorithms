@@ -30,7 +30,7 @@ void naive(vector<Point> &points) {
 }
 
 void partition(vector<Point> &points, vector<Point> &sub1,
-               vector<Point> &sub2) {
+               vector<Point> &sub2) { // by @tracyliu
   int n = (int)points.size() / 2;
   int founded = 0;
   int rat_index, hole_index;
